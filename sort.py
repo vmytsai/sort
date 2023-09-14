@@ -15,10 +15,12 @@ known_extensions = []
 unknown_extensions = []
 
 
+# Unpacking the archive
 def unpacking(file:Path, extract_dir:Path) -> None:
     shutil.unpack_archive(file, extract_dir)
     
 
+# Move the file to a new folder with the required category
 def move(file:Path, category:str, root_dir:Path) -> None:
     target_dir = root_dir.joinpath(category)
     if not target_dir.exists():
@@ -30,6 +32,7 @@ def move(file:Path, category:str, root_dir:Path) -> None:
         file.replace(target_dir.joinpath(file.name))
     
 
+# Get file category
 def get_categories(file:Path) -> str:
     ext = file.suffix.upper().replace('.', '')
     for cat, exts in CATEGORIES.items():
@@ -44,6 +47,7 @@ def get_categories(file:Path) -> str:
     return 'other'
 
 
+# Start sorting the directory
 def sort(root_dir:Path, current_dir:Path) -> None:
     global res, known_extensions, unknown_extensions
     
@@ -57,6 +61,7 @@ def sort(root_dir:Path, current_dir:Path) -> None:
             sort(root_dir, element)
 
 
+# Displaying sorting results
 def res_choices(choice:int) -> None:
     result_list = []
     if choice == 1:
