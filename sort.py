@@ -2,6 +2,18 @@ from pathlib import Path
 import shutil
 import sys
 
+CYRILLIC_SYMBOLS = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяєіїґ"
+LATIN_SYMBOLS = "abcdefghijklmnopqrstuvwxyz"
+KNOWN_SYMBOLS = "(_)-"
+TRANSLATION = ("a", "b", "v", "g", "d", "e", "e", "j", "z", "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u",
+               "f", "h", "ts", "ch", "sh", "sch", "", "y", "", "e", "yu", "ya", "je", "i", "ji", "g")
+TRANS = {}
+for c, l in zip(CYRILLIC_SYMBOLS, TRANSLATION):
+    TRANS[ord(c)] = l
+    TRANS[ord(c.upper())] = l.upper()
+    
+
+    
 CATEGORIES = {'images': {'categories':['JPEG', 'PNG', 'JPG', 'SVG', 'GIF', 'WEBP'], 'result':[]}, 
               'video': {'categories':['AVI', 'MP4', 'MOV', 'MKV'], 'result':[]},
               'documents': {'categories':['DOC', 'DOCX', 'TXT', 'PDF', 'XLSX', 'PPTX'], 'result':[]},
@@ -12,6 +24,14 @@ CATEGORIES = {'images': {'categories':['JPEG', 'PNG', 'JPG', 'SVG', 'GIF', 'WEBP
 
 known_extensions = []
 unknown_extensions = []
+
+
+# Function for transliteration and replacement of unknown characters
+def normalize(file:Path) -> str:
+    for sym in str(file):
+        if sym.lower() not in CYRILLIC_SYMBOLS and sym.lower() not in LATIN_SYMBOLS and sym.lower() not in KNOWN_SYMBOLS and not sym.isdigit():
+            TRANS[ord(sym)] = '_'
+    return file.translate(TRANS)
 
 
 # Unpacking the archive
@@ -25,10 +45,10 @@ def move(file:Path, category:str, root_dir:Path) -> None:
     if not target_dir.exists():
         target_dir.mkdir()
     if category == 'archives':
-        unpacking(file, target_dir.joinpath(file.stem))
+        unpacking(file, target_dir.joinpath(normalize(file.stem)))
         file.unlink()
     else:
-        file.replace(target_dir.joinpath(file.name))
+        file.replace(target_dir.joinpath(normalize(file.stem) + file.suffix))
     
 
 # Get file category
@@ -119,4 +139,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-    
+            
