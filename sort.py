@@ -76,6 +76,8 @@ def sort(root_dir:Path, current_dir:Path) -> None:
     for element in current_dir.iterdir():
         if element.is_file() and element.parent.name not in CATEGORIES.keys():
             category = get_categories(element)
+            if category == 'other':
+                continue
             move(element, category, root_dir)
             if element.parent != root_dir and not any(element.parent.glob('*')):
                 element.parent.rmdir()
