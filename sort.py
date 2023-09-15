@@ -82,7 +82,10 @@ def sort(root_dir:Path, current_dir:Path) -> None:
             if element.parent != root_dir and not any(element.parent.glob('*')):
                 element.parent.rmdir()
         elif element.is_dir():
-            sort(root_dir, element)
+            if not any(element.iterdir()):
+                element.rmdir()
+            else:
+                sort(root_dir, element)
 
 
 # Displaying sorting results
@@ -116,20 +119,7 @@ def res_choices(choice:int) -> None:
         print(f'|\n└{"":─^50}')
 
 
-def main() -> None:
-    try:
-        root_dir = Path(sys.argv[1])
-    except IndexError:
-        return 'Required argument not found.\nExample: python3 main.py /Users/Mytsai/Desktop/Anything'
-        
-    if not root_dir.exists():
-        return 'Folder does not exists. Try another path.'
-    if not any(root_dir.iterdir()):
-        return 'The specified folder is empty.'
-
-    sort(root_dir, root_dir)         
-    print('\nThe work is completed :)')
-    
+def menu() -> None:
     while True:
         print('\nYou can get information:\n1. Display a list of files by category\n2. List of extensions that have been encountered\n3. List of unknown extensions\n0. Exit')
         choice = int(input('\nChoose from the options above: '))
@@ -139,6 +129,24 @@ def main() -> None:
             break
 
 
+def main() -> tuple:
+    try:
+        root_dir = Path(sys.argv[1])
+    except IndexError:
+        return False, 'Required argument not found.\nExample: python3 main.py /Users/Mytsai/Desktop/Anything'
+        
+    if not root_dir.exists():
+        return False, 'Folder does not exists. Try another path.'
+    if not any(root_dir.iterdir()):
+        return False, 'The specified folder is empty.'
+
+    sort(root_dir, root_dir)         
+    return True, '\nThe work is completed :)'
+
+
 if __name__ == '__main__':
-    main()
+    result = main()
+    print(result[1])
+    if result[0]:
+        menu()
             
