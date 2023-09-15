@@ -12,8 +12,6 @@ for c, l in zip(CYRILLIC_SYMBOLS, TRANSLATION):
     TRANS[ord(c)] = l
     TRANS[ord(c.upper())] = l.upper()
     
-
-    
 CATEGORIES = {'images': {'categories':['JPEG', 'PNG', 'JPG', 'SVG', 'GIF', 'WEBP'], 'result':[]}, 
               'video': {'categories':['AVI', 'MP4', 'MOV', 'MKV'], 'result':[]},
               'documents': {'categories':['DOC', 'DOCX', 'TXT', 'PDF', 'XLSX', 'PPTX'], 'result':[]},
