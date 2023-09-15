@@ -42,11 +42,13 @@ def unpacking(file:Path, extract_dir:Path) -> None:
 # Move the file to a new folder with the required category
 def move(file:Path, category:str, root_dir:Path) -> None:
     target_dir = root_dir.joinpath(category)
-    if not target_dir.exists():
+    if not target_dir.exists() and category != 'other':
         target_dir.mkdir()
     if category == 'archives':
         unpacking(file, target_dir.joinpath(normalize(file.stem)))
         file.unlink()
+    elif category == 'other':
+        file.replace(root_dir.joinpath(normalize(file.stem) + file.suffix))
     else:
         file.replace(target_dir.joinpath(normalize(file.stem) + file.suffix))
     
@@ -64,7 +66,7 @@ def get_categories(file:Path) -> str:
         
     if ext not in unknown_extensions:
         unknown_extensions.append(ext)
-        CATEGORIES['other']['result'].append(file.name)
+    CATEGORIES['other']['result'].append(file.name)
         
     return 'other'
 
@@ -76,8 +78,6 @@ def sort(root_dir:Path, current_dir:Path) -> None:
     for element in current_dir.iterdir():
         if element.is_file() and element.parent.name not in CATEGORIES.keys():
             category = get_categories(element)
-            if category == 'other':
-                continue
             move(element, category, root_dir)
             if element.parent != root_dir and not any(element.parent.glob('*')):
                 element.parent.rmdir()
